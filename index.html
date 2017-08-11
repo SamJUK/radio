@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Radio</title>
+
+        <!-- Meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+        <link href="style.css" rel="stylesheet" />
+    </head>
+    <body>
+    <div id="background"></div>
+
+    <div id="errors"></div>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+            <!-- Stations Popup -->
+            <div class="modal fade" id="stationModel" tabindex="-1" role="dialog" aria-labelledby="StationModelLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Stations</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input onkeypress="a()" id="stationSelector" list="stationsDataList" name="stations" onkeypress="stationSelectorKeyHandler(event)" /></label>
+                    <datalist id="stationsDataList">
+                            <!--<option value="Real Radio"/>-->
+                    </datalist>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Exit</button>
+                    <button type="button" class="btn btn-primary" onClick="modelStationSelected()">Change</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
+          <div class="masthead clearfix">
+            <div class="inner">
+            <p class="lead">
+              <a href="#" class="btn btn-lg btn-secondary" data-toggle="modal" data-target="#stationModel" onClick="onStationModelOpen()">Stations</a>
+              <a href="#" class="btn btn-sm btn-secondary btn-bg" onClick="toggleBG()">Toggle BG</a>
+              </p>
+            </div>
+          </div>    
+
+          <div class="inner cover">
+            <h1 id="stationName" class="cover-heading">Select a station to get started!</h1>
+            <p id="trackInfo" class="lead">?</p>
+             <div id="VolumeSlider"></div>
+             <p class="lead">
+              <a href="#" id="mute" class="btn btn-lg btn-secondary" onClick="muteToggle()">Mute</a>
+            </p>
+          </div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Created by <a href="#">@SamJUK</a></p>
+              <p>Background courtesy of <a href="https://unsplash.com">Unsplash</a></p>
+            </div>
+          </div>
+        
+
+        </div>
+
+      </div>
+
+    </div>
+
+        <audio id="stationAudio" src="" autoplay="false"></audio>
+        
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+        <script src="main.js"></script>
+    </body>
+</html>

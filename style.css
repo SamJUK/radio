@@ -1,0 +1,220 @@
+/*
+ * Globals
+ */
+
+/* Links */
+a,
+a:focus,
+a:hover {
+  color: #fff;
+}
+
+/* Custom default button */
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus {
+  color: #333;
+  text-shadow: none; /* Prevent inheritance from `body` */
+  background-color: #fff;
+  border: .05rem solid #fff;
+}
+
+
+/*
+ * Base structure
+ */
+
+html,
+body {
+  height: 100%;
+  background-color: #333;
+  overflow: hidden;
+}
+body {
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 .05rem .1rem rgba(0,0,0,.5);
+}
+
+/* Extra markup and styles for table-esque vertical and horizontal centering */
+.site-wrapper {
+  z-index: 3;
+  display: table;
+  width: 100%;
+  height: 100%; /* For at least Firefox */
+  min-height: 100%;
+  -webkit-box-shadow: inset 0 0 5rem rgba(0,0,0,.5);
+          box-shadow: inset 0 0 5rem rgba(0,0,0,.5);
+}
+.site-wrapper-inner {
+  display: table-cell;
+  vertical-align: top;
+}
+.cover-container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Padding for spacing */
+.inner {
+  padding: 2rem;
+}
+
+
+/*
+ * Header
+ */
+
+.masthead {
+  margin-bottom: 2rem;
+  text-align: left;
+  width: 100%;
+  left: 0;
+}
+
+/*
+ * Cover
+ */
+
+.cover {
+  padding: 0 1.5rem;
+  z-index: 3;
+  position: relative;
+}
+.cover .btn-lg {
+  padding: .75rem 1.25rem;
+  font-weight: bold;
+}
+
+
+/*
+ * Footer
+ */
+
+.mastfoot {
+  color: rgba(255,255,255,.5);
+}
+.mastfoot .inner p{
+    margin-bottom: 0;
+}
+.mastfoot .inner p:last-child{
+    margin-bottom: 1rem;
+}
+
+#stationModel h5{
+    color: black;
+    text-shadow: none;
+}
+#stationModel .btn{
+    cursor: pointer;
+}
+#stationModel .btn-secondary{
+    border: .05rem solid rgba(0,0,0,0.3);
+}
+#trackInfo{
+    display: none;
+}
+#mute.muted{
+    background: none;
+    color: #fefefe;
+}
+
+#VolumeSlider{
+  width: 50%;
+  margin: 2em auto;
+  height: 7px;
+  background-color: #F3F3F3;
+  border: 0px solid transparent;
+  cursor: pointer;
+  pointer-events: initial;
+  opacity: 1;
+}
+#VolumeSlider.disabled{
+  pointer-events: none;
+  opacity: .2;
+}
+.ui-slider-range-min{
+  background-color: #cda03a;
+}
+.ui-slider .ui-slider-handle{
+  border-radius: 50%;
+  height: .8em;
+  width: .8em;
+  cursor: pointer;
+  top: -3px;
+}
+
+#errors{
+    z-index: 10;
+    position: absolute;
+    width: 30%;
+    margin: 10px 0px;
+    right: 0.5%;
+}
+
+.alert{
+    margin-bottom: 0.5rem;
+}
+
+#background{
+    z-index: 0;
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: url('https://source.unsplash.com/random/1920x1080');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+#background::after{
+    z-index: 1;
+    content: '';
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,.7);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.btn-bg{
+    float: right;
+    margin-right: 5px;
+}
+
+
+/*
+ * Affix and center
+ */
+
+@media (min-width: 40em) {
+  /* Pull out the header and footer */
+  .masthead {
+    position: fixed;
+    top: 0;
+  }
+  .mastfoot {
+    position: fixed;
+    bottom: 0;
+  }
+  /* Start the vertical centering */
+  .site-wrapper-inner {
+    vertical-align: middle;
+  }
+  /* Handle the widths */
+  .mastfoot,
+  .cover-container {
+    width: 100%; /* Must be percentage or pixels for horizontal alignment */
+  }
+}
+
+@media (min-width: 62em) {
+  .mastfoot,
+  .cover-container {
+    width: 42rem;
+  }
+}

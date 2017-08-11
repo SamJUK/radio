@@ -1,0 +1,117 @@
+[
+  {
+    "DisplayName": "Nation Radio",
+    "StationImg": "nation.png",
+    "audioURL": "http:\/\/icy-e-03-boh.sharp-stream.com\/tcnation.aac"
+  },
+  {
+    "DisplayName": "Capital FM",
+    "StationImg": "capital.png",
+    "audioURL": "http:\/\/media-ice.musicradio.com\/CapitalUKMP3"
+  },
+  {
+    "DisplayName": "Kiss FM",
+    "StationImg": "kiss.png",
+    "audioURL": "http:\/\/icy-e-ba-04-cr.sharp-stream.com\/kiss100low.mp3"
+  },
+  {
+    "DisplayName": "BBC 1",
+    "StationImg": "bbc1.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_radio1_mf_p"
+  },
+  {
+    "DisplayName": "BBC 1 Xtra",
+    "StationImg": "bbc1x.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_radio1xtra_mf_p"
+  },
+  {
+    "DisplayName": "BBC 2",
+    "StationImg": "bbc2.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_radio2_mf_p"
+  },
+  {
+    "DisplayName": "BBC 3",
+    "StationImg": "bbc3.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_radio3_mf_p"
+  },
+  {
+    "DisplayName": "BBC 4",
+    "StationImg": "bbc4.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_radio4fm_mf_p"
+  },
+  {
+    "DisplayName": "BBC 4 Extra",
+    "StationImg": "bbc4x.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_radio4extra_mf_p"
+  },
+  {
+    "DisplayName": "BBC 5",
+    "StationImg": "bbc5.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_radio5live_mf_p"
+  },
+  {
+    "DisplayName": "BBC 6",
+    "StationImg": "bbc6.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_6music_mf_p"
+  },
+  {
+    "DisplayName": "BBC 5 Extra",
+    "StationImg": "bbc5x.png",
+    "audioURL": "http:\/\/bbcmedia.ic.llnwd.net\/stream\/bbcmedia_radio5extra_mf_p"
+  },
+  {
+    "DisplayName": "Heart",
+    "StationImg": "heart.png",
+    "audioURL": "http:\/\/media-ice.musicradio.com\/HeartSouthWalesMP3"
+  },
+  {
+    "DisplayName": "Kisstory",
+    "StationImg": "kisstory.png",
+    "audioURL": "http:\/\/icy-e-bl-05-cr.sharp-stream.com\/kisstorylow.mp3"
+  },
+  {
+    "DisplayName": "Smooth South Wales",
+    "StationImg": "smooth.png",
+    "audioURL": "http:\/\/media-ice.musicradio.com\/SmoothSouthWalesMP3"
+  },
+  {
+    "DisplayName": "Classic FM",
+    "StationImg": "classic.png",
+    "audioURL": "http:\/\/media-ice.musicradio.com\/ClassicFMMP3"
+  },
+  {
+    "DisplayName": "Magic",
+    "StationImg": "magic.png",
+    "audioURL": "http:\/\/icy-e-bz-04-cr.sharp-stream.com\/magic1054low.mp3"
+  },
+  {
+    "DisplayName": "Radio X",
+    "StationImg": "x.png",
+    "audioURL": "http:\/\/media-ice.musicradio.com\/RadioXUKMP3"
+  },
+  {
+    "DisplayName": "London Broadcast Channel (LBC)",
+    "StationImg": "LBC.png",
+    "audioURL": "http:\/\/media-ice.musicradio.com\/LBCLondonMP3"
+  },
+  {
+    "DisplayName": "Choice Radio",
+    "StationImg": "choice.png",
+    "audioURL": "http:\/\/149.255.59.164:8138\/stream?type=http&nocache=10323"
+  },
+  {
+    "DisplayName": "Frag Radio",
+    "StationImg": "frag.png",
+    "audioURL": "http:\/\/stream.fragradio.co.uk:8000\/live"
+  },
+  {
+    "DisplayName": "HIVE 365",
+    "StationImg": "hive.png",
+    "audioURL": "http:\/\/stream.hive365.co.uk:8088\/live"
+  },
+  {
+    "DisplayName": "Virgin Radio",
+    "StationImg": "virgin.png",
+    "audioURL": "http:\/\/radio.virginradio.co.uk\/stream"
+  }
+]
