@@ -76,14 +76,14 @@ function muteToggle()
     {
         d.removeClass('muted');
         v.removeClass('disabled');
-        a.volume = volumeBeforeMute;
+        a.prop("volume", volumeBeforeMute);
     }
     else
     {
         d.addClass('muted');
         v.addClass('disabled');
-        volumeBeforeMute = a.volume;
-        volume = 0;
+        volumeBeforeMute = a.prop("volume");;
+        a.prop("volume", 0);
     }
 }
 
