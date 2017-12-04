@@ -1,5 +1,7 @@
-var stations = [];
-var volumeBeforeMute = 1;
+let stations = [];
+let volumeBeforeMute = 1;
+let hlsTypes = ['m3u8'];
+let hls = new Hls();
 
 // On Load
 $(function(){
@@ -15,6 +17,9 @@ $(function(){
         $('#background').fadeIn();
     }, 100);
 
+    // Setup HLS
+    HLSErrorHandling();
+
 });
 
 function LoadStations()
@@ -27,8 +32,8 @@ function LoadStations()
 
 function populateStationsDataList()
 {
-    var html = '';
-    var i = 0;
+    let html = '';
+    let i = 0;
     stations.forEach( station => {
         html += `
         <option value='${station.DisplayName}'
@@ -60,7 +65,7 @@ function autoFocusStationModel()
 function stationSelectorKeyHandler(event)
 {
     // Enter
-   if(event.keyCode == 13){
+   if(event.keyCode === 13){
         modelStationSelected();
     }
 }
@@ -68,9 +73,9 @@ function stationSelectorKeyHandler(event)
 function muteToggle()
 {
     // Check if it has the muted class
-    var d = $('#mute');
-    var v = $('#VolumeSlider');
-    var a = $('#stationAudio');
+    const d = $('#mute');
+    const v = $('#VolumeSlider');
+    const a = $('#stationAudio');
 
     if (d.hasClass('muted'))
     {
@@ -89,13 +94,13 @@ function muteToggle()
 
 function modelStationSelected()
 {
-    var option = $("#stationsDataList option[value='" + $('#stationSelector').val() + "']");
+    let option = $("#stationsDataList option[value='" + $('#stationSelector').val() + "']");
 
     // Does not exist
-    if (option.length == 0)
+    if (option.length === 0)
     {
-        var childCount = $('errors').children().length;
-        var error = `
+        const childCount = $('errors').children().length;
+        const error = `
             <div id="error${childCount}" class="alert alert-danger alert-dismissible fade show" role="alert" data-dismiss="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -112,22 +117,80 @@ function modelStationSelected()
         return;
     }
 
-    var stationID = option.data('id');
+    let stationID = option.data('id');
     changeStation(stationID);
     $('#stationModel').modal('toggle');
 }
 
 function changeStation (id)
 {
-    var stationURL = stations[id].audioURL;
-    var stationName = stations[id].DisplayName;
+    let stationURL = stations[id].audioURL;
+    let stationName = stations[id].DisplayName;
 
     $('#stationName').text(stationName);
-    $('#stationAudio').attr('src', stationURL);
-    $('#stationAudio')[0].play();
+    updateStationAudio(stationURL);
 }
 
+function updateStationAudio(stationurl)
+{
+    let audio = $('#stationAudio');
 
+    let split = stationurl.split('.');
+    let ext = split[split.length - 1];
+
+    if(hlsTypes.indexOf(ext) !== -1){
+        // Is HLS
+        audio[0].pause();
+        playHLS(stationurl);
+    }else{
+        // Regular Audio
+        hls.destroy();
+        audio.attr('src', stationurl);
+        audio[0].play();
+    }
+}
+
+function playHLS(stationurl)
+{
+    if (Hls.isSupported()) {
+        let video = $('#HLSStationAudio')[0];
+
+        hls.destroy();
+        hls = new Hls();
+
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+            hls.loadSource(stationurl);
+            hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                video.play();
+            });
+        });
+    }
+}
+
+function HLSErrorHandling()
+{
+    hls.on(Hls.Events.ERROR, function (event, data) {
+        if (data.fatal) {
+            switch(data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                    // try to recover network error
+                    console.log("fatal network error encountered, try to recover");
+                    hls.startLoad();
+                    break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                    console.log("fatal media error encountered, try to recover");
+                    hls.recoverMediaError();
+                    break;
+                default:
+                    // cannot recover
+                    console.log('fatal error, cannot recover so destroying self!');
+                    hls.destroy();
+                    break;
+            }
+        }
+    });
+}
 
 function SetUpVolumeSlider()
 {
@@ -154,9 +217,9 @@ function toggleBG()
 
 function ajaxGet(page, callback)
 {
-    var xhttp = new XMLHttpRequest();
+    let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState === 4 && this.status === 200) {
             callback(this.responseText);
         }
     };

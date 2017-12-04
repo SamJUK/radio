@@ -113,5 +113,10 @@
     "DisplayName": "Virgin Radio",
     "StationImg": "virgin.png",
     "audioURL": "http:\/\/radio.virginradio.co.uk\/stream"
+  },
+  {
+    "DisplayName": "Trkvz",
+    "StationImg": "#",
+    "audioURL": "http:\/\/trkvz-radyo.ercdn.net\/rdaspor\/rdaspor_1.m3u8"
   }
 ]
