@@ -3,6 +3,8 @@ let volumeBeforeMute = 1;
 let hlsTypes = ['m3u8'];
 let hls = new Hls();
 
+let current_track = 1;
+
 // On Load
 $(function(){
 
@@ -20,7 +22,31 @@ $(function(){
     // Setup HLS
     HLSErrorHandling();
 
+    setUpTracks();
+
 });
+
+function setUpTracks(){
+    $('audio').on('playing', function(){
+        console.log('Stoping Track'+current_track);
+        let current_audio = $(`#stationAudioTrack${current_track}`);
+        let new_track = current_track === 2 ? 1 : 2;
+        let new_audio = $(`#stationAudioTrack${new_track}`)
+        let vol = Math.min(Math.max(current_audio[0].volume / 10, 0), 1);
+    
+        let fade = setInterval(function(){
+            current_audio[0].volume -= vol;
+            new_audio[0].volume += vol;
+        }, 100);
+
+        setTimeout(function(){
+            current_audio[0].pause();
+            current_track = current_track === 2 ? 1 : 2;
+            clearInterval(fade);
+            console.log('Track Stopped');
+        }, 1000);
+    });
+}
 
 function LoadStations()
 {
@@ -64,10 +90,10 @@ function autoFocusStationModel()
 
 function stationSelectorKeyHandler(event)
 {
-    // Enter
-   if(event.keyCode === 13){
-        modelStationSelected();
-    }
+    // keyCode 13 - Enter
+   if(event.keyCode !== 13) return;
+
+    modelStationSelected();
 }
 
 function muteToggle()
@@ -133,7 +159,8 @@ function changeStation (id)
 
 function updateStationAudio(stationurl)
 {
-    let audio = $('#stationAudio');
+    var track = current_track === 2 ? 1 : 2;
+    let new_audio = $(`#stationAudioTrack${track}`);
 
     let split = stationurl.split('.');
     let ext = split[split.length - 1];
@@ -142,12 +169,18 @@ function updateStationAudio(stationurl)
         // Is HLS
         audio[0].pause();
         playHLS(stationurl);
-    }else{
-        // Regular Audio
-        hls.destroy();
-        audio.attr('src', stationurl);
-        audio[0].play();
+        return;
     }
+
+    // Regular Audio
+
+    console.log(new_audio);
+
+    hls.destroy();
+    console.log('Starting Track: '+track);
+    new_audio.attr('src', stationurl);
+    new_audio[0].volume = 0;
+    new_audio[0].play();
 }
 
 function playHLS(stationurl)
@@ -201,19 +234,16 @@ function SetUpVolumeSlider()
       max: 100,
       value: 90,
       slide: function( event, ui ) {
-        document.getElementById('stationAudio').volume = ui.value/100;
+        $(`#stationAudioTrack${current_track}`)[0].volume = ui.value/100;
       }
     });
 }
 
 function toggleBG()
 {
-    if ($('#background').is(':visible'))
-        $('#background').fadeOut();
-    else
-        $('#background').fadeIn();
+    var fade = $('#background').is(':visible') ? 'fadeOut' : 'fadeIn';
+    $('#background')[fade]();
 }
-
 
 function ajaxGet(page, callback)
 {
