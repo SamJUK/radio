@@ -118,5 +118,25 @@
     "DisplayName": "Trkvz",
     "StationImg": "#",
     "audioURL": "http:\/\/trkvz-radyo.ercdn.net\/rdaspor\/rdaspor_1.m3u8"
+  },
+  {
+    "DisplayName": "Rinse FM",
+    "StationImg" : "#",
+    "audioURL"   : "http:\/\/streamer.dgen.net:8000\/rinseradio"
+  },
+  {
+    "DisplayName": "NTS London Live",
+    "StationImg" : "#",
+    "audioURL"   : "https:\/\/stream-relay-geo.ntslive.net\/stream?t=1532730119940"
+  },
+  {
+    "DisplayName": "Sub FM",
+    "StationImg" : "#",
+    "audioURL"   : "http:\/\/listen.sub.fm\/hi"
+  },
+  {
+    "DisplayName": "UK Bass Radio",
+    "StationImg" : "#",
+    "audioURL"   : "http:\/\/uk3-pn.mixstream.net:8210\/;\/;685782922574517stream.nsv"
   }
 ]
