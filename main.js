@@ -104,7 +104,7 @@ function muteToggle()
     // Check if it has the muted class
     const d = $('#mute');
     const v = $('#VolumeSlider');
-    const a = $('#stationAudio');
+    const a = $(`#stationAudioTrack${current_track}`);
 
     if (d.hasClass('muted'))
     {
@@ -271,15 +271,13 @@ function ContinueFromLastVisit()
     var station = docCookies.getItem('station_id');
     var volume = docCookies.getItem('audio_volume');
 
-    // debugger;
     if(station !== null && stations[parseInt(station)]) {
-        // debugger;
         changeStation(parseInt(station));
     }
 
     var floatVol = parseFloat(volume);
     if(volume && !isNaN(floatVol) && (floatVol >= 0 && floatVol <= 1)) {
-        document.getElementById('stationAudio').volume = floatVol;
+        $(`#stationAudioTrack${current_track}`)[0].volume = floatVol;
         $( "#VolumeSlider" ).slider('value',floatVol*100);
 
     }
