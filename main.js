@@ -33,7 +33,7 @@ function setUpTracks(){
         let new_track = current_track === 2 ? 1 : 2;
         let new_audio = $(`#stationAudioTrack${new_track}`)
         let vol = Math.min(Math.max(current_audio[0].volume / 10, 0), 1);
-    
+
         let fade = setInterval(function(){
             current_audio[0].volume -= vol;
             new_audio[0].volume += vol;
@@ -53,7 +53,10 @@ function LoadStations()
     ajaxGet('stations.json', data => {
         stations = JSON.parse(data);
         populateStationsDataList();
-    }); 
+
+        // Continue from last visit if available
+        ContinueFromLastVisit();
+    });
 }
 
 function populateStationsDataList()
@@ -91,7 +94,7 @@ function autoFocusStationModel()
 function stationSelectorKeyHandler(event)
 {
     // keyCode 13 - Enter
-   if(event.keyCode !== 13) return;
+    if(event.keyCode !== 13) return;
 
     modelStationSelected();
 }
@@ -113,9 +116,11 @@ function muteToggle()
     {
         d.addClass('muted');
         v.addClass('disabled');
-        volumeBeforeMute = a.prop("volume");;
+        volumeBeforeMute = a.prop("volume");
         a.prop("volume", 0);
     }
+
+    docCookies.setItem( 'audio_volume', a.prop('volume') );
 }
 
 function modelStationSelected()
@@ -155,6 +160,8 @@ function changeStation (id)
 
     $('#stationName').text(stationName);
     updateStationAudio(stationURL);
+
+    docCookies.setItem( 'station_id', id );
 }
 
 function updateStationAudio(stationurl)
@@ -235,6 +242,7 @@ function SetUpVolumeSlider()
       value: 90,
       slide: function( event, ui ) {
         $(`#stationAudioTrack${current_track}`)[0].volume = ui.value/100;
+        docCookies.setItem( 'audio_volume', ui.value/100 );
       }
     });
 }
@@ -255,4 +263,24 @@ function ajaxGet(page, callback)
     };
     xhttp.open("GET", page, true);
     xhttp.send();
+}
+
+
+function ContinueFromLastVisit()
+{
+    var station = docCookies.getItem('station_id');
+    var volume = docCookies.getItem('audio_volume');
+
+    // debugger;
+    if(station !== null && stations[parseInt(station)]) {
+        // debugger;
+        changeStation(parseInt(station));
+    }
+
+    var floatVol = parseFloat(volume);
+    if(volume && !isNaN(floatVol) && (floatVol >= 0 && floatVol <= 1)) {
+        document.getElementById('stationAudio').volume = floatVol;
+        $( "#VolumeSlider" ).slider('value',floatVol*100);
+
+    }
 }
