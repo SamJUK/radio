@@ -3,6 +3,10 @@ let volumeBeforeMute = 1;
 let hlsTypes = ['m3u8'];
 let hls = new Hls();
 
+let current_type = 1; // 1 = AUDIO | 2 = VIDEO
+let current_track = 1; // CURRENT AUDIO TRACK
+let current_hls_track = 1; // CURRENT HLS TRACK
+
 // On Load
 $(function(){
 
@@ -20,7 +24,42 @@ $(function(){
     // Setup HLS
     HLSErrorHandling();
 
+    setUpTracks();
+
 });
+
+function setUpTracks(){
+    $('audio').on('playing', function(){
+        console.log('Stoping Track'+current_track);
+        let current_track_dom = current_type === 1
+            ? $(`#stationAudioTrack${current_track}`)
+            : $(`#HLSStationAudioTrack${current_hls_track}`);
+
+        let new_track_dom = current_type === 1
+            ? $(`#stationAudioTrack${current_track === 1 ? 2 : 1}`)
+            : $(`#HLSStationAudioTrack${current_hls_track === 1 ? 2 : 1}`);
+
+        let vol = Math.min(Math.max(current_track_dom[0].volume / 10, 0), 1);
+
+        let fade = setInterval(function(){
+            current_track_dom[0].volume -= vol;
+            new_track_dom[0].volume += vol;
+        }, 100);
+
+        setTimeout(function(){
+            current_track_dom[0].pause();
+
+            if(current_type === 1) {
+                current_track = current_track === 1 ? 2 : 1;
+            }else{
+                current_hls_track = current_hls_track === 1 ? 2 : 1;
+            }
+
+            clearInterval(fade);
+            console.log('Track Stopped');
+        }, 1000);
+    });
+}
 
 function LoadStations()
 {
@@ -30,7 +69,7 @@ function LoadStations()
 
         // Continue from last visit if available
         ContinueFromLastVisit();
-    }); 
+    });
 }
 
 function populateStationsDataList()
@@ -67,10 +106,10 @@ function autoFocusStationModel()
 
 function stationSelectorKeyHandler(event)
 {
-    // Enter
-   if(event.keyCode === 13){
-        modelStationSelected();
-    }
+    // keyCode 13 - Enter
+    if(event.keyCode !== 13) return;
+
+    modelStationSelected();
 }
 
 function muteToggle()
@@ -78,7 +117,7 @@ function muteToggle()
     // Check if it has the muted class
     const d = $('#mute');
     const v = $('#VolumeSlider');
-    const a = $('#stationAudio');
+    const a = $(`#stationAudioTrack${current_track}`);
 
     if (d.hasClass('muted'))
     {
@@ -140,36 +179,44 @@ function changeStation (id)
 
 function updateStationAudio(stationurl)
 {
-    let audio = $('#stationAudio');
+    var track = current_track === 2 ? 1 : 2;
+    let new_audio = $(`#stationAudioTrack${track}`);
 
     let split = stationurl.split('.');
     let ext = split[split.length - 1];
 
     if(hlsTypes.indexOf(ext) !== -1){
         // Is HLS
-        audio[0].pause();
+        console.log('Playing HLS stream');
         playHLS(stationurl);
-    }else{
-        // Regular Audio
-        hls.destroy();
-        audio.attr('src', stationurl);
-        audio[0].play();
+        return;
     }
+
+    // Regular Audio
+    console.log('Playing Audio Stream');
+
+    hls.destroy();
+    console.log('Starting Track: '+track);
+    new_audio.attr('src', stationurl);
+    new_audio[0].volume = 0;
+    new_audio[0].play();
 }
 
 function playHLS(stationurl)
 {
     if (Hls.isSupported()) {
-        let video = $('#HLSStationAudio')[0];
+        let track = current_hls_track === 2 ? 1 : 2;
+        let new_video = $(`#HLSStationAudioTrack${track}`)[0];
 
         hls.destroy();
         hls = new Hls();
 
-        hls.attachMedia(video);
+        hls.attachMedia(new_video);
         hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             hls.loadSource(stationurl);
             hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-                video.play();
+                new_video.volume = 0;
+                new_video.play();
             });
         });
     }
@@ -208,7 +255,7 @@ function SetUpVolumeSlider()
       max: 100,
       value: 90,
       slide: function( event, ui ) {
-        document.getElementById('stationAudio').volume = ui.value/100;
+        $(`#stationAudioTrack${current_track}`)[0].volume = ui.value/100;
         docCookies.setItem( 'audio_volume', ui.value/100 );
       }
     });
@@ -216,10 +263,8 @@ function SetUpVolumeSlider()
 
 function toggleBG()
 {
-    if ($('#background').is(':visible'))
-        $('#background').fadeOut();
-    else
-        $('#background').fadeIn();
+    var fade = $('#background').is(':visible') ? 'fadeOut' : 'fadeIn';
+    $('#background')[fade]();
 }
 
 function ajaxGet(page, callback)
@@ -240,15 +285,13 @@ function ContinueFromLastVisit()
     var station = docCookies.getItem('station_id');
     var volume = docCookies.getItem('audio_volume');
 
-    // debugger;
     if(station !== null && stations[parseInt(station)]) {
-        // debugger;
         changeStation(parseInt(station));
     }
 
     var floatVol = parseFloat(volume);
     if(volume && !isNaN(floatVol) && (floatVol >= 0 && floatVol <= 1)) {
-        document.getElementById('stationAudio').volume = floatVol;
+        $(`#stationAudioTrack${current_track}`)[0].volume = floatVol;
         $( "#VolumeSlider" ).slider('value',floatVol*100);
 
     }
