@@ -3,7 +3,9 @@ let volumeBeforeMute = 1;
 let hlsTypes = ['m3u8'];
 let hls = new Hls();
 
-let current_track = 1;
+let current_type = 1; // 1 = AUDIO | 2 = VIDEO
+let current_track = 1; // CURRENT AUDIO TRACK
+let current_hls_track = 1; // CURRENT HLS TRACK
 
 // On Load
 $(function(){
@@ -29,19 +31,30 @@ $(function(){
 function setUpTracks(){
     $('audio').on('playing', function(){
         console.log('Stoping Track'+current_track);
-        let current_audio = $(`#stationAudioTrack${current_track}`);
-        let new_track = current_track === 2 ? 1 : 2;
-        let new_audio = $(`#stationAudioTrack${new_track}`)
-        let vol = Math.min(Math.max(current_audio[0].volume / 10, 0), 1);
+        let current_track_dom = current_type === 1
+            ? $(`#stationAudioTrack${current_track}`)
+            : $(`#HLSStationAudioTrack${current_hls_track}`);
+
+        let new_track_dom = current_type === 1
+            ? $(`#stationAudioTrack${current_track === 1 ? 2 : 1}`)
+            : $(`#HLSStationAudioTrack${current_hls_track === 1 ? 2 : 1}`);
+
+        let vol = Math.min(Math.max(current_track_dom[0].volume / 10, 0), 1);
 
         let fade = setInterval(function(){
-            current_audio[0].volume -= vol;
-            new_audio[0].volume += vol;
+            current_track_dom[0].volume -= vol;
+            new_track_dom[0].volume += vol;
         }, 100);
 
         setTimeout(function(){
-            current_audio[0].pause();
-            current_track = current_track === 2 ? 1 : 2;
+            current_track_dom[0].pause();
+
+            if(current_type === 1) {
+                current_track = current_track === 1 ? 2 : 1;
+            }else{
+                current_hls_track = current_hls_track === 1 ? 2 : 1;
+            }
+
             clearInterval(fade);
             console.log('Track Stopped');
         }, 1000);
@@ -174,14 +187,13 @@ function updateStationAudio(stationurl)
 
     if(hlsTypes.indexOf(ext) !== -1){
         // Is HLS
-        audio[0].pause();
+        console.log('Playing HLS stream');
         playHLS(stationurl);
         return;
     }
 
     // Regular Audio
-
-    console.log(new_audio);
+    console.log('Playing Audio Stream');
 
     hls.destroy();
     console.log('Starting Track: '+track);
@@ -193,16 +205,18 @@ function updateStationAudio(stationurl)
 function playHLS(stationurl)
 {
     if (Hls.isSupported()) {
-        let video = $('#HLSStationAudio')[0];
+        let track = current_hls_track === 2 ? 1 : 2;
+        let new_video = $(`#HLSStationAudioTrack${track}`)[0];
 
         hls.destroy();
         hls = new Hls();
 
-        hls.attachMedia(video);
+        hls.attachMedia(new_video);
         hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             hls.loadSource(stationurl);
             hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-                video.play();
+                new_video.volume = 0;
+                new_video.play();
             });
         });
     }
