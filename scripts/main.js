@@ -63,7 +63,7 @@ function setUpTracks(){
 
 function LoadStations()
 {
-    ajaxGet('stations.json', data => {
+    ajaxGet('data/stations.json', data => {
         stations = JSON.parse(data);
         populateStationsDataList();
 
@@ -261,12 +261,6 @@ function SetUpVolumeSlider()
     });
 }
 
-function toggleBG()
-{
-    var fade = $('#background').is(':visible') ? 'fadeOut' : 'fadeIn';
-    $('#background')[fade]();
-}
-
 function ajaxGet(page, callback)
 {
     let xhttp = new XMLHttpRequest();
@@ -278,7 +272,6 @@ function ajaxGet(page, callback)
     xhttp.open("GET", page, true);
     xhttp.send();
 }
-
 
 function ContinueFromLastVisit()
 {
@@ -295,4 +288,20 @@ function ContinueFromLastVisit()
         $( "#VolumeSlider" ).slider('value',floatVol*100);
 
     }
+}
+
+
+/**
+ *  BACKGROUND FUNCTIONS
+ */
+
+function toggleBG()
+{
+    var fade = $('#background').is(':visible') ? 'fadeOut' : 'fadeIn';
+    $('#background')[fade]();
+}
+
+function toggleVisualizer()
+{
+    console.log('Toggle Visualizer');
 }
