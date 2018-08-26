@@ -26,6 +26,7 @@ $(function(){
 
     setUpTracks();
 
+    setupVisualizer();
 });
 
 function setUpTracks(){
@@ -294,14 +295,61 @@ function ContinueFromLastVisit()
 /**
  *  BACKGROUND FUNCTIONS
  */
-
 function toggleBG()
 {
     var fade = $('#background').is(':visible') ? 'fadeOut' : 'fadeIn';
     $('#background')[fade]();
 }
 
+function setupVisualizer()
+{
+    if (!Detector.webgl) {
+        document.getElementById('toggleVisualizerButton').style.display = 'none';
+        return;
+    }
+
+    var audioAnalyser = new AudioAnalyser();
+    audioAnalyser.init();
+
+    var view = new View();
+    view.init( audioAnalyser );
+
+    var controller = new Controller();
+    controller.init( audioAnalyser, view );
+
+    window.visualizer = {};
+
+    window.visualizer.view = view;
+    window.visualizer.controller = controller;
+    window.visualizer.audioAnalyser = audioAnalyser;
+
+    var ctx = audioAnalyser.audioCtx;
+    var audio = document.getElementById('stationAudioTrack2');
+    var audioSrc = ctx.createMediaElementSource(audio);
+    audioAnalyser.source = audioSrc;
+    var analyser = audioAnalyser.analyser;
+
+    audioSrc.connect(analyser);
+    audioSrc.connect(ctx.destination);
+
+    analyser.fftSize = 2048;
+    var bufferLength = analyser.frequencyBinCount;
+    var dataArray = new Uint8Array(bufferLength);
+    analyser.getByteTimeDomainData(dataArray);
+
+    var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+    function renderFrame()
+    {
+        requestAnimationFrame(renderFrame);
+        analyser.getByteFrequencyData(frequencyData);
+        // console.log(frequencyData);
+    }
+
+    renderFrame();
+}
+
 function toggleVisualizer()
 {
-    console.log('Toggle Visualizer');
+    document.getElementById('visualizer_container').classList.toggle('visible');
 }

@@ -190,6 +190,22 @@ body {
 }
 
 
+/* Visualiser */
+#visualizer_container {
+  background: #222;
+  opacity: 0;
+  -webkit-transition: .3s ease;
+  -moz-transition: .3s ease;
+  -ms-transition: .3s ease;
+  -o-transition: .3s ease;
+  transition: .3s ease;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+
 /*
  * Affix and center
  */
