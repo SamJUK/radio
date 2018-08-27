@@ -295,10 +295,25 @@ function ContinueFromLastVisit()
 /**
  *  BACKGROUND FUNCTIONS
  */
-function toggleBG()
+    function handle_bg_change(element)
 {
-    var fade = $('#background').is(':visible') ? 'fadeOut' : 'fadeIn';
-    $('#background')[fade]();
+    console.log('BG Change', element.value);
+    switch(element.value){
+        case 'none':
+            $('#background').fadeOut();
+            document.querySelector('select[name="visualizers"]').classList.add('hide');
+            break;
+        case 'image':
+            document.getElementById('visualizer_container').classList.remove('visible');
+            document.querySelector('select[name="visualizers"]').classList.add('hide');
+            $('#background').fadeIn();
+            break;
+        case 'visualizer':
+            $('#background').fadeIn();
+            document.getElementById('visualizer_container').classList.add('visible');
+            document.querySelector('select[name="visualizers"]').classList.remove('hide');
+            break;
+    }
 }
 
 function setupVisualizer()
@@ -317,12 +332,6 @@ function setupVisualizer()
     var controller = new Controller();
     controller.init( audioAnalyser, view );
 
-    window.visualizer = {};
-
-    window.visualizer.view = view;
-    window.visualizer.controller = controller;
-    window.visualizer.audioAnalyser = audioAnalyser;
-
     var ctx = audioAnalyser.audioCtx;
     var audio = document.getElementById('stationAudioTrack2');
     var audioSrc = ctx.createMediaElementSource(audio);
@@ -331,6 +340,8 @@ function setupVisualizer()
 
     audioSrc.connect(analyser);
     audioSrc.connect(ctx.destination);
+
+    debugger;
 
     analyser.fftSize = 2048;
     var bufferLength = analyser.frequencyBinCount;
@@ -347,9 +358,37 @@ function setupVisualizer()
     }
 
     renderFrame();
+
+    // Export stuff
+    window.visualizer = {};
+    window.visualizer.view = view;
+    window.visualizer.controller = controller;
+    window.visualizer.audioAnalyser = audioAnalyser;
+    window.visualizer.analyser = analyser;
+
+    var keys = Object.keys(visualizer.controller.visualizers);
+    for(var i = 0; i < keys.length; i++){
+        visualizer.controller.visualizers[keys[i]].init( visualizer, visualizer.view );
+    }
 }
 
-function toggleVisualizer()
+function handle_visualizer_change(element)
 {
-    document.getElementById('visualizer_container').classList.toggle('visible');
+    var name = element.value;
+    if(!visualizer.controller.visualizers.hasOwnProperty(name)) {
+        return console.error('Visualizer does not exist');
+    }
+
+    if(visualizer.controller.activeViz && visualizer.controller.activeViz === name) {
+        return console.error('Already current Visualizer');
+    }
+
+    if(visualizer.controller.activeViz !== null) {
+        visualizer.controller.activeViz.destroy();
+    }
+    visualizer.controller.activeViz = visualizer.controller.visualizers[name];
+    visualizer.controller.activeViz.make();
+    visualizer.view.renderVisualization = visualizer.controller.activeViz.render;
+    console.log('Changed Visualizer to ', name);
+
 }
