@@ -7,6 +7,8 @@ let current_type = 1; // 1 = AUDIO | 2 = VIDEO
 let current_track = 1; // CURRENT AUDIO TRACK
 let current_hls_track = 1; // CURRENT HLS TRACK
 
+let current_bg = 1; // 0 = None | 1 = Image | 2 = Visualizer
+
 // On Load
 $(function(){
 
@@ -26,6 +28,7 @@ $(function(){
 
     setUpTracks();
 
+    setupVisualizer();
 });
 
 function setUpTracks(){
@@ -63,7 +66,7 @@ function setUpTracks(){
 
 function LoadStations()
 {
-    ajaxGet('stations.json', data => {
+    ajaxGet('data/stations.json', data => {
         stations = JSON.parse(data);
         populateStationsDataList();
 
@@ -200,6 +203,10 @@ function updateStationAudio(stationurl)
     new_audio.attr('src', stationurl);
     new_audio[0].volume = 0;
     new_audio[0].play();
+
+    if(current_bg === 2) {
+        init_visualiser(track);
+    }
 }
 
 function playHLS(stationurl)
@@ -261,12 +268,6 @@ function SetUpVolumeSlider()
     });
 }
 
-function toggleBG()
-{
-    var fade = $('#background').is(':visible') ? 'fadeOut' : 'fadeIn';
-    $('#background')[fade]();
-}
-
 function ajaxGet(page, callback)
 {
     let xhttp = new XMLHttpRequest();
@@ -278,7 +279,6 @@ function ajaxGet(page, callback)
     xhttp.open("GET", page, true);
     xhttp.send();
 }
-
 
 function ContinueFromLastVisit()
 {
@@ -295,4 +295,129 @@ function ContinueFromLastVisit()
         $( "#VolumeSlider" ).slider('value',floatVol*100);
 
     }
+}
+
+
+/**
+ *  BACKGROUND FUNCTIONS
+ */
+function handle_bg_change(element)
+{
+    console.log('BG Change', element.value);
+    switch(element.value){
+        case 'none':
+            $('#background').fadeOut();
+            document.querySelector('select[name="visualizers"]').classList.add('hide');
+            current_bg = 0;
+            break;
+        case 'image':
+            document.getElementById('visualizer_container').classList.remove('visible');
+            document.querySelector('select[name="visualizers"]').classList.add('hide');
+            $('#background').fadeIn();
+            current_bg = 1;
+            break;
+        case 'visualizer':
+            $('#background').fadeIn();
+            document.getElementById('visualizer_container').classList.add('visible');
+            document.querySelector('select[name="visualizers"]').classList.remove('hide');
+            current_bg = 2;
+            break;
+    }
+}
+
+function setupVisualizer()
+{
+    if (!Detector.webgl) {
+        document.getElementById('toggleVisualizerButton').style.display = 'none';
+        return;
+    }
+
+    var audioAnalyser = new AudioAnalyser();
+    audioAnalyser.init();
+
+    var view = new View();
+    view.init( audioAnalyser );
+
+    var controller = new Controller();
+    controller.init( audioAnalyser, view );
+
+    var ctx = audioAnalyser.audioCtx;
+    var audio = document.getElementById('stationAudioTrack2');
+    var audioSrc = ctx.createMediaElementSource(audio);
+    audioAnalyser.source = audioSrc;
+    var analyser = audioAnalyser.analyser;
+
+    audioSrc.connect(analyser);
+    audioSrc.connect(ctx.destination);
+
+    analyser.fftSize = 2048;
+    var bufferLength = analyser.frequencyBinCount;
+    var dataArray = new Uint8Array(bufferLength);
+    analyser.getByteTimeDomainData(dataArray);
+
+    var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+    function renderFrame()
+    {
+        requestAnimationFrame(renderFrame);
+        analyser.getByteFrequencyData(frequencyData);
+        // console.log(frequencyData);
+    }
+
+    renderFrame();
+
+    // Export stuff
+    window.visualizer = {};
+    window.visualizer.view = view;
+    window.visualizer.controller = controller;
+    window.visualizer.audioAnalyser = audioAnalyser;
+    window.visualizer.analyser = analyser;
+    window.visualizer.audioAnalyser = audioAnalyser;
+
+    var keys = Object.keys(visualizer.controller.visualizers);
+    for(var i = 0; i < keys.length; i++){
+        visualizer.controller.visualizers[keys[i]].init( visualizer, visualizer.view );
+    }
+}
+
+function handle_visualizer_change(element)
+{
+    var name = element.value;
+    if(!visualizer.controller.visualizers.hasOwnProperty(name)) {
+        return console.error('Visualizer does not exist');
+    }
+
+    if(visualizer.controller.activeViz && visualizer.controller.activeViz === name) {
+        return console.error('Already current Visualizer');
+    }
+
+    if(visualizer.controller.activeViz !== null) {
+        visualizer.controller.activeViz.destroy();
+    }
+    visualizer.controller.activeViz = visualizer.controller.visualizers[name];
+    visualizer.controller.activeViz.make();
+    visualizer.view.renderVisualization = visualizer.controller.activeViz.render;
+    console.log('Changed Visualizer to ', name);
+
+}
+
+function init_visualiser(track)
+{
+    console.log('Reinit Visualiser on track ', track);
+    var ctx = visualizer.audioAnalyser.audioCtx;
+    var audio = document.getElementById(`stationAudioTrack${track}`);
+    var audioSrc = ctx.createMediaElementSource(audio);
+    visualizer.audioAnalyser.source = audioSrc;
+    var analyser = visualizer.audioAnalyser.analyser;
+
+    audioSrc.connect(analyser);
+    audioSrc.connect(ctx.destination);
+
+    analyser.fftSize = 2048;
+    var bufferLength = analyser.frequencyBinCount;
+    var dataArray = new Uint8Array(bufferLength);
+    analyser.getByteTimeDomainData(dataArray);
+
+    var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+    console.log('Finished Reinit', track);
 }

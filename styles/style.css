@@ -1,25 +1,22 @@
 /*
  * Globals
  */
-
 /* Links */
 a,
 a:focus,
 a:hover {
   color: #fff;
 }
-
 /* Custom default button */
 .btn-secondary,
 .btn-secondary:hover,
 .btn-secondary:focus {
   color: #333;
-  text-shadow: none; /* Prevent inheritance from `body` */
+  text-shadow: none;
+  /* Prevent inheritance from `body` */
   background-color: #fff;
   border: .05rem solid #fff;
 }
-
-
 /*
  * Base structure
  */
@@ -30,18 +27,18 @@ body {
   overflow: hidden;
   color: #fff;
   text-align: center;
-  text-shadow: 0 .05rem .1rem rgba(0,0,0,.5);
+  text-shadow: 0 0.05rem 0.1rem rgba(0, 0, 0, 0.5);
 }
-
 /* Extra markup and styles for table-esque vertical and horizontal centering */
 .site-wrapper {
   z-index: 3;
   display: table;
   width: 100%;
-  height: 100%; /* For at least Firefox */
+  height: 100%;
+  /* For at least Firefox */
   min-height: 100%;
-  -webkit-box-shadow: inset 0 0 5rem rgba(0,0,0,.5);
-  box-shadow: inset 0 0 5rem rgba(0,0,0,.5);
+  -webkit-box-shadow: inset 0 0 5rem rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 5rem rgba(0, 0, 0, 0.5);
 }
 .site-wrapper-inner {
   display: table-cell;
@@ -51,17 +48,13 @@ body {
   margin-right: auto;
   margin-left: auto;
 }
-
 /* Padding for spacing */
 .inner {
   padding: 2rem;
 }
-
-
 /*
  * Header
  */
-
 .masthead {
   position: fixed;
   top: 0;
@@ -70,11 +63,9 @@ body {
   width: 100%;
   left: 0;
 }
-
 /*
  * Cover
  */
-
 .cover {
   padding: 0 1.5rem;
   z-index: 3;
@@ -84,45 +75,36 @@ body {
   padding: .75rem 1.25rem;
   font-weight: bold;
 }
-
-
 /*
  * Footer
  */
-
 .mastfoot {
-  color: rgba(255,255,255,.5);
-
-  .inner p{
-    margin-bottom: 0;
-
-    &:last-child{
-      margin-bottom: 1rem;
-    }
-  }
+  color: rgba(255, 255, 255, 0.5);
 }
-
-#stationModel{
-  h5{
-    color: black;
-    text-shadow: none;
-  }
-  .btn{
-    cursor: pointer;
-  }
-  .btn-secondary{
-    border: .05rem solid rgba(0,0,0,0.3);
-  }
+.mastfoot .inner p {
+  margin-bottom: 0;
 }
-#trackInfo{
+.mastfoot .inner p:last-child {
+  margin-bottom: 1rem;
+}
+#stationModel h5 {
+  color: black;
+  text-shadow: none;
+}
+#stationModel .btn {
+  cursor: pointer;
+}
+#stationModel .btn-secondary {
+  border: 0.05rem solid rgba(0, 0, 0, 0.3);
+}
+#trackInfo {
   display: none;
 }
-#mute.muted{
+#mute.muted {
   background: none;
   color: #fefefe;
 }
-
-#VolumeSlider{
+#VolumeSlider {
   width: 50%;
   margin: 2em auto;
   height: 7px;
@@ -132,34 +114,31 @@ body {
   pointer-events: initial;
   opacity: 1;
 }
-#VolumeSlider.disabled{
+#VolumeSlider.disabled {
   pointer-events: none;
   opacity: .2;
 }
-.ui-slider-range-min{
+.ui-slider-range-min {
   background-color: #cda03a;
 }
-.ui-slider .ui-slider-handle{
+.ui-slider .ui-slider-handle {
   border-radius: 50%;
   height: .8em;
   width: .8em;
   cursor: pointer;
   top: -3px;
 }
-
-#errors{
+#errors {
   z-index: 10;
   position: absolute;
   width: 30%;
   margin: 10px 0px;
   right: 0.5%;
 }
-
-.alert{
+.alert {
   margin-bottom: 0.5rem;
 }
-
-#background{
+#background {
   z-index: 0;
   position: absolute;
   display: block;
@@ -171,7 +150,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
 }
-#background::after{
+#background::after {
   z-index: 1;
   content: '';
   position: absolute;
@@ -180,20 +159,61 @@ body {
   height: 100%;
   top: 0;
   left: 0;
-  background: rgba(0,0,0,.7);
+  background: rgba(0, 0, 0, 0.7);
   background-size: cover;
   background-repeat: no-repeat;
 }
-.btn-bg{
+.btn-bg {
   float: right;
   margin-right: 1.3rem;
 }
-
-
+/* Visualiser */
+#visualizer_container {
+  background: #222;
+  opacity: 0;
+  -webkit-transition: .3s ease;
+  -moz-transition: .3s ease;
+  -ms-transition: .3s ease;
+  -o-transition: .3s ease;
+  transition: .3s ease;
+}
+#visualizer_container.visible {
+  opacity: 1;
+}
+.hide {
+  display: none;
+}
+/* Github Fork Banner */
+@media screen and (max-width: 500px) {
+  .github-corner .github-corner .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+  }
+}
+.github-corner:hover .octo-arm {
+  animation: octocat-wave 560ms ease-in-out;
+}
+@media screen and (max-width: 500px) {
+  .github-corner:hover .octo-arm {
+    animation: none;
+  }
+}
+@keyframes octocat-wave {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20%,
+  60% {
+    transform: rotate(-25deg);
+  }
+  40%,
+  80% {
+    transform: rotate(10deg);
+  }
+}
 /*
  * Affix and center
  */
-
 @media (min-width: 40em) {
   /* Pull out the header and footer */
   .mastfoot {
@@ -207,27 +227,25 @@ body {
   /* Handle the widths */
   .mastfoot,
   .cover-container {
-    width: 100%; /* Must be percentage or pixels for horizontal alignment */
+    width: 100%;
+    /* Must be percentage or pixels for horizontal alignment */
   }
 }
-
 @media (min-width: 62em) {
   .mastfoot,
   .cover-container {
     width: 42rem;
   }
 }
-
-@media (max-width: 40em){
-  .masthead{
+@media (max-width: 40em) {
+  .masthead {
     position: relative;
-
-    .btn-lg{
-      font-size: .9rem;
-      padding: .25em .5em;
-    }
-    .btn-bg{
-      display: none;
-    }
+  }
+  .masthead .btn-lg {
+    font-size: .9rem;
+    padding: .25em .5em;
+  }
+  .masthead .btn-bg {
+    display: none;
   }
 }
