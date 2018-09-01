@@ -9,6 +9,8 @@ let current_hls_track = 1; // CURRENT HLS TRACK
 
 let current_bg = 1; // 0 = None | 1 = Image | 2 = Visualizer
 
+let base_page_title = '';
+
 // On Load
 $(function(){
 
@@ -29,6 +31,8 @@ $(function(){
     setUpTracks();
 
     setupVisualizer();
+
+    base_page_title = document.querySelector('title').innerText;
 });
 
 function setUpTracks(){
@@ -178,6 +182,7 @@ function changeStation (id)
     updateStationAudio(stationURL);
 
     docCookies.setItem( 'station_id', id );
+    document.querySelector('title').innerText = `${base_page_title} - ${stationName}`;
 }
 
 function updateStationAudio(stationurl)
