@@ -306,34 +306,34 @@ function ContinueFromLastVisit()
 /**
  *  BACKGROUND FUNCTIONS
  */
-function handle_bg_change(element)
+
+function change_background(target)
 {
-    console.log('BG Change', element.value);
-    switch(element.value){
+    console.log('BG Change', target);
+    switch(target){
         case 'none':
             $('#background').fadeOut();
-            document.querySelector('select[name="visualizers"]').classList.add('hide');
             current_bg = 0;
             break;
         case 'image':
             document.getElementById('visualizer_container').classList.remove('visible');
-            document.querySelector('select[name="visualizers"]').classList.add('hide');
             $('#background').fadeIn();
             current_bg = 1;
             break;
         case 'visualizer':
             $('#background').fadeIn();
             document.getElementById('visualizer_container').classList.add('visible');
-            document.querySelector('select[name="visualizers"]').classList.remove('hide');
             current_bg = 2;
             break;
+        default: 
+            console.error('Invalid Background Type', target);
     }
 }
 
 function setupVisualizer()
 {
     if (!Detector.webgl) {
-        document.getElementById('toggleVisualizerButton').style.display = 'none';
+        alert('WebGL Missing, visualizer wont work');
         return;
     }
 
@@ -385,9 +385,11 @@ function setupVisualizer()
     }
 }
 
-function handle_visualizer_change(element)
+function change_visualizer(name)
 {
-    var name = element.value;
+    if(current_bg !== 2)
+        change_background('visualizer');
+
     if(!visualizer.controller.visualizers.hasOwnProperty(name)) {
         return console.error('Visualizer does not exist');
     }

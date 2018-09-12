@@ -183,6 +183,75 @@ body {
 .hide {
   display: none;
 }
+/* Background Selector */
+html {
+  background: #222;
+}
+.navigation {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+.navigation .item {
+  display: inline-block;
+  position: relative;
+  padding: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: .6;
+  text-align: center;
+  cursor: pointer;
+}
+.navigation .item .fas {
+  color: #fff;
+  fill: #fff;
+  font-size: 32px;
+}
+.navigation .item .item-list {
+  position: absolute;
+  top: calc(-100% - 20px);
+  left: calc(-100% + 15px);
+  transform: rotate(45deg);
+  padding-right: 30px;
+  opacity: 0;
+  visibilty: hidden;
+  transition: .3s ease;
+}
+.navigation .item .item-list .item {
+  margin-bottom: 0;
+  display: block;
+  padding: 15px;
+  transform: rotate(-45deg);
+}
+.navigation .item .item-list .item i {
+  font-size: 24px;
+}
+.navigation .item .item-list .item .item-list {
+  padding-right: 0;
+  left: 0;
+  top: calc(-500% - 25px);
+  transform: rotate(0deg);
+}
+.navigation .item .item-list .item .item-list .item {
+  margin-bottom: 5px;
+  left: 0 !important;
+  transform: rotate(0deg);
+}
+.navigation .item .item-list .item:nth-of-type(1),
+.navigation .item .item-list .item:nth-of-type(3) {
+  left: 35px;
+}
+.navigation .item .item-list .item:last-of-type {
+  margin-bottom: 0;
+}
+.navigation .item:hover {
+  opacity: 1;
+  overflow: visible;
+}
+.navigation .item:hover > .item-list {
+  opacity: 1;
+  visibilty: visible;
+}
 /* Github Fork Banner */
 @media screen and (max-width: 500px) {
   .github-corner .github-corner .octo-arm {
