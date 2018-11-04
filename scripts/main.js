@@ -316,6 +316,10 @@ function change_background(target)
             current_bg = 0;
             break;
         case 'image':
+            if(current_bg === 1) {
+                var new_image_url = 'https://source.unsplash.com/random/1920x1080?v='+(new Date().getTime());
+                document.querySelector('#background').style.background = 'url(\''+new_image_url+'\')';
+            }
             document.getElementById('visualizer_container').classList.remove('visible');
             $('#background').fadeIn();
             current_bg = 1;
