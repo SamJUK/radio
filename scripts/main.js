@@ -12,7 +12,7 @@ let current_bg = 1; // 0 = None | 1 = Image | 2 = Visualizer
 let base_page_title = '';
 
 // On Load
-$(function(){
+function onload() {
 
     // Load Stations
     LoadStations();
@@ -33,28 +33,39 @@ $(function(){
     setupVisualizer();
 
     base_page_title = document.querySelector('title').innerText;
-});
+}
+
+if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onload);
+} else {
+    onload();
+}
 
 function setUpTracks(){
     $('audio').on('playing', function(){
         console.log('Stoping Track'+current_track);
-        let current_track_dom = current_type === 1
-            ? $(`#stationAudioTrack${current_track}`)
-            : $(`#HLSStationAudioTrack${current_hls_track}`);
+        let current_track_id = current_type === 1
+            ? `stationAudioTrack${current_track}`
+            : `HLSStationAudioTrack${current_hls_track}`;
 
-        let new_track_dom = current_type === 1
-            ? $(`#stationAudioTrack${current_track === 1 ? 2 : 1}`)
-            : $(`#HLSStationAudioTrack${current_hls_track === 1 ? 2 : 1}`);
+        let current_track_element = document.getElementById(current_track_id);
 
-        let vol = Math.min(Math.max(current_track_dom[0].volume / 10, 0), 1);
+        let new_track_int = current_track === 1 ? 2 : 1;
+        let new_track_id = current_type === 1
+            ? `stationAudioTrack${new_track_int}`
+            : `HLSStationAudioTrack${new_track_int}`;
+
+        let new_track_element = document.getElementById(new_track_id);
+
+        let vol = Math.min(Math.max(current_track_element.volume / 10, 0), 1);
 
         let fade = setInterval(function(){
-            current_track_dom[0].volume -= vol;
-            new_track_dom[0].volume += vol;
+            current_track_element.volume -= vol;
+            new_track_element.volume += vol;
         }, 100);
 
         setTimeout(function(){
-            current_track_dom[0].pause();
+            current_track_element.pause();
 
             if(current_type === 1) {
                 current_track = current_track === 1 ? 2 : 1;
@@ -90,7 +101,7 @@ function populateStationsDataList()
         `;
         i++;
     });
-    $('#stationsDataList').html(html);
+    document.getElementById('stationsDataList').innerHTML = html;
 }
 
 function onStationModelOpen()
@@ -101,7 +112,7 @@ function onStationModelOpen()
 
 function clearStationModel()
 {
-    $('#stationSelector').val("");
+    document.getElementById('stationSelector').value = '';
 }
 
 function autoFocusStationModel()
@@ -114,44 +125,45 @@ function autoFocusStationModel()
 function stationSelectorKeyHandler(event)
 {
     // keyCode 13 - Enter
-    if(event.keyCode !== 13) return;
-
-    modelStationSelected();
+    switch (event.keyCode) {
+        case 13:
+            modelStationSelected();
+            break;
+    }
 }
 
 function muteToggle()
 {
-    // Check if it has the muted class
-    const d = $('#mute');
-    const v = $('#VolumeSlider');
-    const a = $(`#stationAudioTrack${current_track}`);
+    const mute_element = document.getElementById('mute');
+    const volume_element = document.getElementById('VolumeSlider');
+    const track_element = document.getElementById(`stationAudioTrack${current_track}`);
 
-    if (d.hasClass('muted'))
+    if (mute_element.classList.contains('muted'))
     {
-        d.removeClass('muted');
-        v.removeClass('disabled');
-        a.prop("volume", volumeBeforeMute);
-    }
-    else
-    {
-        d.addClass('muted');
-        v.addClass('disabled');
-        volumeBeforeMute = a.prop("volume");
-        a.prop("volume", 0);
+        mute_element.classList.remove('muted');
+        volume_element.classList.remove('disabled');
+        track_element.volume = volumeBeforeMute;
+    } else {
+        mute_element.classList.add('muted');
+        volume_element.classList.add('disabled');
+        volumeBeforeMute = track_element.volume;
+        track_element.volume = 0;
     }
 
-    docCookies.setItem( 'audio_volume', a.prop('volume') );
+    docCookies.setItem( 'audio_volume', track_element.volume );
 }
 
 function modelStationSelected()
 {
-    let option = $("#stationsDataList option[value='" + $('#stationSelector').val() + "']");
+    const station_input_value = document.getElementById('stationSelector').value;
+    const station_datalist_option = document.querySelector(`#stationsDataList option[value='${station_input_value}']`);
+    const errors_container = document.getElementById('errors');
 
     // Does not exist
-    if (option.length === 0)
+    if (station_datalist_option === null)
     {
         const childCount = $('errors').children().length;
-        const error = `
+        const errorTemplate = `
             <div id="error${childCount}" class="alert alert-danger alert-dismissible fade show" role="alert" data-dismiss="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -160,15 +172,15 @@ function modelStationSelected()
             </div>
         `;
 
-        $('#errors').prepend(error);
+        errors_container.innerHTML += errorTemplate;
         setTimeout( id => {
-            $(`#error${id}`).remove();
+            document.getElementById(`error${id}`).remove();
         }, 3000, [childCount]);
 
         return;
     }
 
-    let stationID = option.data('id');
+    let stationID = station_datalist_option.getAttribute('data-id');
     changeStation(stationID);
     $('#stationModel').modal('toggle');
 }
@@ -178,7 +190,7 @@ function changeStation (id)
     let stationURL = stations[id].audioURL;
     let stationName = stations[id].DisplayName;
 
-    $('#stationName').text(stationName);
+    document.getElementById('stationName').innerText = stationName;
     updateStationAudio(stationURL);
 
     docCookies.setItem( 'station_id', id );
@@ -188,13 +200,12 @@ function changeStation (id)
 function updateStationAudio(stationurl)
 {
     var track = current_track === 2 ? 1 : 2;
-    let new_audio = $(`#stationAudioTrack${track}`);
+    let new_audio = document.getElementById(`stationAudioTrack${track}`);
 
     let split = stationurl.split('.');
     let ext = split[split.length - 1];
 
     if(hlsTypes.indexOf(ext) !== -1){
-        // Is HLS
         console.log('Playing HLS stream');
         playHLS(stationurl);
         return;
@@ -205,9 +216,9 @@ function updateStationAudio(stationurl)
 
     hls.destroy();
     console.log('Starting Track: '+track);
-    new_audio.attr('src', stationurl);
-    new_audio[0].volume = 0;
-    new_audio[0].play();
+    new_audio.setAttribute('src', stationurl);
+    new_audio.volume = 0;
+    new_audio.play();
 
     if(current_bg === 2) {
         init_visualiser(track);
@@ -218,7 +229,7 @@ function playHLS(stationurl)
 {
     if (Hls.isSupported()) {
         let track = current_hls_track === 2 ? 1 : 2;
-        let new_video = $(`#HLSStationAudioTrack${track}`)[0];
+        let new_video = document.getElementById(`HLSStationAudioTrack${track}`);
 
         hls.destroy();
         hls = new Hls();
@@ -267,7 +278,7 @@ function SetUpVolumeSlider()
       max: 100,
       value: 90,
       slide: function( event, ui ) {
-        $(`#stationAudioTrack${current_track}`)[0].volume = ui.value/100;
+        document.getElementById(`stationAudioTrack${current_track}`).volume = ui.value/100;
         docCookies.setItem( 'audio_volume', ui.value/100 );
       }
     });
@@ -296,9 +307,8 @@ function ContinueFromLastVisit()
 
     var floatVol = parseFloat(volume);
     if(volume && !isNaN(floatVol) && (floatVol >= 0 && floatVol <= 1)) {
-        $(`#stationAudioTrack${current_track}`)[0].volume = floatVol;
+        document.getElementById(`stationAudioTrack${current_track}`).volume = floatVol;
         $( "#VolumeSlider" ).slider('value',floatVol*100);
-
     }
 }
 
@@ -310,6 +320,9 @@ function ContinueFromLastVisit()
 function change_background(target)
 {
     console.log('BG Change', target);
+    const background = document.getElementById('background');
+    const visualizer_container = document.getElementById('visualizer_container');
+    
     switch(target){
         case 'none':
             $('#background').fadeOut();
@@ -320,13 +333,13 @@ function change_background(target)
                 var new_image_url = 'https://source.unsplash.com/random/1920x1080?v='+(new Date().getTime());
                 document.querySelector('#background').style.background = 'url(\''+new_image_url+'\')';
             }
-            document.getElementById('visualizer_container').classList.remove('visible');
+            visualizer_container.classList.remove('visible');
             $('#background').fadeIn();
             current_bg = 1;
             break;
         case 'visualizer':
             $('#background').fadeIn();
-            document.getElementById('visualizer_container').classList.add('visible');
+            visualizer_container.classList.add('visible');
             current_bg = 2;
             break;
         default: 
