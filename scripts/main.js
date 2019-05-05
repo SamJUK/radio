@@ -317,8 +317,9 @@ function change_background(target)
             break;
         case 'image':
             if(current_bg === 1) {
-                var new_image_url = 'https://source.unsplash.com/random/1920x1080?v='+(new Date().getTime());
-                document.querySelector('#background').style.background = 'url(\''+new_image_url+'\')';
+		var window_size = `${window.innerWidth}x${window.innerHeight}`;
+                var new_image_url = `https://source.unsplash.com/random/${window_size}?v=${(new Date().getTime())}`;
+                document.querySelector('#background').style.backgroundImage = 'url(\''+new_image_url+'\')';
             }
             document.getElementById('visualizer_container').classList.remove('visible');
             $('#background').fadeIn();
