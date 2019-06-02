@@ -178,14 +178,16 @@ function changeStation (id)
     let stationURL = stations[id].audioURL;
     let stationName = stations[id].DisplayName;
 
+    let cors = stations[id].hasOwnProperty('cors') ? stations[id].cors : true;
+
     $('#stationName').text(stationName);
-    updateStationAudio(stationURL);
+    updateStationAudio(stationURL, cors);
 
     docCookies.setItem( 'station_id', id );
     document.querySelector('title').innerText = `${base_page_title} - ${stationName}`;
 }
 
-function updateStationAudio(stationurl)
+function updateStationAudio(stationurl, cors)
 {
     var track = current_track === 2 ? 1 : 2;
     let new_audio = $(`#stationAudioTrack${track}`);
@@ -205,6 +207,13 @@ function updateStationAudio(stationurl)
 
     hls.destroy();
     console.log('Starting Track: '+track);
+    
+    if (cors) {
+        new_audio[0].setAttribute('crossorigin', 'anonymous');
+    } else {
+        new_audio[0].removeAttribute('crossorigin');
+    }
+
     new_audio.attr('src', stationurl);
     new_audio[0].volume = 0;
     new_audio[0].play();
