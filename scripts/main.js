@@ -8,11 +8,18 @@ let current_track = 1; // CURRENT AUDIO TRACK
 let current_hls_track = 1; // CURRENT HLS TRACK
 
 let current_bg = 1; // 0 = None | 1 = Image | 2 = Visualizer
+let bg_image_rotate_interval = null;
 
 let base_page_title = '';
 
+let settings = {
+    bgTimer: 600000
+};
+
 // On Load
 $(function(){
+
+    initSettings();
 
     // Load Stations
     LoadStations();
@@ -33,6 +40,13 @@ $(function(){
     setupVisualizer();
 
     base_page_title = document.querySelector('title').innerText;
+
+    // Setup the background rotate interval since initally we start it with CSS
+    let savedBGRotateTime = Number(docCookies.getItem('rad-setting-bgTimer'));
+    if(!isNaN(savedBGRotateTime) && savedBGRotateTime > 0) {
+        settings.bgTimer = savedBGRotateTime;
+    }
+    setupBGRotate();
 });
 
 function setUpTracks(){
@@ -316,6 +330,21 @@ function ContinueFromLastVisit()
  *  BACKGROUND FUNCTIONS
  */
 
+function setupBGRotate()
+{
+    destroyBGRotate();
+    bg_image_rotate_interval = setInterval(change_background.bind(this, 'image'), settings.bgTimer);
+}
+
+function destroyBGRotate()
+{
+    if (bg_image_rotate_interval === null) {
+        return false;
+    }
+    clearInterval(bg_image_rotate_interval);
+    bg_image_rotate_interval = null;
+}
+
 function change_background(target)
 {
     console.log('BG Change', target);
@@ -323,6 +352,7 @@ function change_background(target)
         case 'none':
             $('#background').fadeOut();
             current_bg = 0;
+            destroyBGRotate();
             break;
         case 'image':
             if(current_bg === 1) {
@@ -333,11 +363,13 @@ function change_background(target)
             document.getElementById('visualizer_container').classList.remove('visible');
             $('#background').fadeIn();
             current_bg = 1;
+            setupBGRotate();
             break;
         case 'visualizer':
             $('#background').fadeIn();
             document.getElementById('visualizer_container').classList.add('visible');
             current_bg = 2;
+            destroyBGRotate();
             break;
         default: 
             console.error('Invalid Background Type', target);
@@ -441,4 +473,36 @@ function init_visualiser(track)
 
     var frequencyData = new Uint8Array(analyser.frequencyBinCount);
     console.log('Finished Reinit', track);
+}
+
+function initSettings()
+{
+    let appSettings = document.querySelectorAll('[data-setting]');
+    Array.from(appSettings).forEach(appSetting => {
+        let name = appSetting.getAttribute('data-setting');
+        let cookie = 'rad-setting-' + name;
+        let value = docCookies.getItem(cookie);
+
+        if (value) {
+            appSetting.value = value;
+            settings[name] = value;
+        } else {
+            appSetting.value = settings[name];
+            docCookies.setItem(cookie, settings[name]);
+        }
+    });
+}
+
+function modelSettingsSave() 
+{
+    let appSettings = document.querySelectorAll('[data-setting]');
+    Array.from(appSettings).forEach(appSetting => {
+        let name = appSetting.getAttribute('data-setting');
+        let cookie = 'rad-setting-' + name;
+
+        settings[name] = appSetting.value;
+        docCookies.setItem(cookie, appSetting.value);
+    });
+
+    $('#settingModal').modal('toggle');
 }
