@@ -9,12 +9,17 @@ let current_hls_track = 1; // CURRENT HLS TRACK
 
 let current_bg = 1; // 0 = None | 1 = Image | 2 = Visualizer
 let bg_image_rotate_interval = null;
-let bg_image_rotate_time = 600000; // Seconds
 
 let base_page_title = '';
 
+let settings = {
+    bgTimer: 600000
+};
+
 // On Load
 $(function(){
+
+    initSettings();
 
     // Load Stations
     LoadStations();
@@ -37,9 +42,9 @@ $(function(){
     base_page_title = document.querySelector('title').innerText;
 
     // Setup the background rotate interval since initally we start it with CSS
-    let savedBGRotateTime = Number(docCookies.getItem('bg_image_rotate_time'));
+    let savedBGRotateTime = Number(docCookies.getItem('rad-setting-bgTimer'));
     if(!isNaN(savedBGRotateTime) && savedBGRotateTime > 0) {
-        bg_image_rotate_time = savedBGRotateTime;
+        settings.bgTimer = savedBGRotateTime;
     }
     setupBGRotate();
 });
@@ -319,7 +324,7 @@ function ContinueFromLastVisit()
 function setupBGRotate()
 {
     destroyBGRotate();
-    bg_image_rotate_interval = setInterval(change_background.bind(this, 'image'), bg_image_rotate_time);
+    bg_image_rotate_interval = setInterval(change_background.bind(this, 'image'), settings.bgTimer);
 }
 
 function destroyBGRotate()
@@ -459,4 +464,36 @@ function init_visualiser(track)
 
     var frequencyData = new Uint8Array(analyser.frequencyBinCount);
     console.log('Finished Reinit', track);
+}
+
+function initSettings()
+{
+    let appSettings = document.querySelectorAll('[data-setting]');
+    Array.from(appSettings).forEach(appSetting => {
+        let name = appSetting.getAttribute('data-setting');
+        let cookie = 'rad-setting-' + name;
+        let value = docCookies.getItem(cookie);
+
+        if (value) {
+            appSetting.value = value;
+            settings[name] = value;
+        } else {
+            appSetting.value = settings[name];
+            docCookies.setItem(cookie, settings[name]);
+        }
+    });
+}
+
+function modelSettingsSave() 
+{
+    let appSettings = document.querySelectorAll('[data-setting]');
+    Array.from(appSettings).forEach(appSetting => {
+        let name = appSetting.getAttribute('data-setting');
+        let cookie = 'rad-setting-' + name;
+
+        settings[name] = appSetting.value;
+        docCookies.setItem(cookie, appSetting.value);
+    });
+
+    $('#settingModal').modal('toggle');
 }

@@ -87,15 +87,25 @@ body {
 .mastfoot .inner p:last-child {
   margin-bottom: 1rem;
 }
-#stationModel h5 {
+.settings-button {
+  position: fixed;
+  bottom: 20px;
+  left: 30px;
+}
+.modals h5 {
   color: black;
   text-shadow: none;
 }
-#stationModel .btn {
+.modals .btn {
   cursor: pointer;
 }
-#stationModel .btn-secondary {
+.modals .btn-secondary {
   border: 0.05rem solid rgba(0, 0, 0, 0.3);
+}
+.modals p,
+.modals label {
+  color: black;
+  text-shadow: none;
 }
 #trackInfo {
   display: none;
